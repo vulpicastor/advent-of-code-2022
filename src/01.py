@@ -10,9 +10,6 @@ YEAR = 2022
 DAY = 1
 
 
-
-
-
 def main():
     # data = aocd.get_data(day=DAY, year=YEAR)
     # inlist = data.split('\n')
