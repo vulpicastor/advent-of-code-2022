@@ -1,34 +1,13 @@
 #!/usr/bin/env python3
 
+# pylint: disable=invalid-name
+# pylint: disable=missing-docstring
+# pylint: disable=unspecified-encoding
 # pylint: disable=unused-import
-import collections
-import functools
-import io
-import itertools
-import operator as op
-import re
-import timeit
-
-import numpy as np
 import aocd
 
 YEAR = 2021
 DAY = 2
-
-
-
-def win(a, x):
-    match (a, x):
-        case ('A', 'X') | ('B', 'Y') | ('C', 'Z'):
-            return 3
-        case ('A', 'Y') | ('B', 'Z') | ('C', 'X'):
-            return 6
-        case _:
-            return 0
-            
-def score(a, x):
-    s = ord(x) - 87
-    return s + win(a, x)
 
 STRATEGY = {
     'X': {
@@ -48,6 +27,22 @@ STRATEGY = {
     },
 }
 
+
+def win(a, x):
+    match (a, x):
+        case ('A', 'X') | ('B', 'Y') | ('C', 'Z'):
+            return 3
+        case ('A', 'Y') | ('B', 'Z') | ('C', 'X'):
+            return 6
+        case _:
+            return 0
+
+
+def score(a, x):
+    s = ord(x) - 87
+    return s + win(a, x)
+
+
 def main():
     # data = aocd.get_data(day=DAY, year=YEAR)
     data = """A Y
@@ -58,18 +53,9 @@ C Z
         data = f.read()
     inlist = [l.split() for l in data.split('\n')[:-1]]
 
-    print(inlist)
-    for m in inlist:
-        print(m, score(*m))
     print(sum(score(*m) for m in inlist))
 
-    total_score = 0
-    for a, x in inlist:
-        s = score(a, STRATEGY[x][a])
-        total_score += s
-        print(a, x, s)
-    print(total_score)
-
+    print(sum(score(a, STRATEGY[x][a]) for a, x in inlist))
 
     # aocd.submit(answer, part='a', day=DAY, year=YEAR)
 
