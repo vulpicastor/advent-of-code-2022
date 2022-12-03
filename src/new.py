@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# pylint: disable=invalid-name
+# pylint: disable=missing-docstring
+# pylint: disable=unspecified-encoding
 # pylint: disable=unused-import
 import collections
 import functools
@@ -12,7 +15,7 @@ import timeit
 import numpy as np
 import aocd
 
-YEAR = 2021
+YEAR = 2022
 DAY = 1
 
 
