@@ -7,11 +7,7 @@ DAY = 4
 
 
 def contains(a, b):
-    a_lo, a_hi = a
-    b_lo, b_hi = b
-    if a_lo >= b_lo and a_hi <= b_hi:
-        return True
-    elif b_lo >= a_lo and b_hi <= a_hi:
+    if a[0] <= b[0] and a[1] >= b[1]:
         return True
     return False
 
@@ -35,7 +31,7 @@ def main():
     data = aocd.get_data(day=DAY, year=YEAR)
     inlist = [[[int(i) for i in r.split('-')] for r in l.split(',')] for l in data.split('\n') if l]
 
-    answer = sum(contains(a, b) for a, b in inlist)
+    answer = sum(contains(a, b) or contains(b, a) for a, b in inlist)  # pylint: disable=arguments-out-of-order
     print(answer)
     aocd.submit(answer, part='a', day=DAY, year=YEAR)
 
