@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-# pylint: disable=invalid-name
-# pylint: disable=missing-docstring
-# pylint: disable=unspecified-encoding
 # pylint: disable=unused-import
 import collections
 import functools
