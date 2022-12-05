@@ -1,15 +1,5 @@
 #!/usr/bin/env python3
 
-# pylint: disable=unused-import
-import collections
-import functools
-import io
-import itertools
-import operator as op
-import re
-import timeit
-
-import numpy as np
 import aocd
 
 YEAR = 2022
@@ -25,12 +15,14 @@ def contains(a, b):
         return True
     return False
 
+
 def overlaps(a, b):
     if a[0] > b[0]:
         a, b = b, a
     if a[1] >= b[0]:
         return True
     return False
+
 
 def main():
     data = """2-4,6-8
@@ -42,12 +34,10 @@ def main():
 """
     data = aocd.get_data(day=DAY, year=YEAR)
     inlist = [[[int(i) for i in r.split('-')] for r in l.split(',')] for l in data.split('\n') if l]
-    print(inlist)
 
     answer = sum(contains(a, b) for a, b in inlist)
     print(answer)
-
-    # aocd.submit(answer, part='a', day=DAY, year=YEAR)
+    aocd.submit(answer, part='a', day=DAY, year=YEAR)
 
     answer = sum(overlaps(a, b) for a, b in inlist)
     print(answer)
