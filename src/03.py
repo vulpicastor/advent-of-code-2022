@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-# pylint: disable=invalid-name
-# pylint: disable=missing-docstring
-# pylint: disable=unspecified-encoding
-# pylint: disable=unused-import
 import aocd
 
 YEAR = 2022
@@ -33,12 +29,12 @@ def intersect(*args):
 
 
 def main():
-    # data = aocd.get_data(day=DAY, year=YEAR)
-    with open(f'input/{DAY:02d}.txt') as f:
-        data = f.read()
+    data = aocd.get_data(day=DAY, year=YEAR)
     inlist = data.split('\n')
 
-    print(sum(priority(intersect(*split_half(l))) for l in inlist))
+    answer = sum(priority(intersect(*split_half(l))) for l in inlist)
+    print(answer)
+    aocd.submit(answer, part='a', day=DAY, year=YEAR)
 
     n_group = len(inlist) // 3
     p_sum = 0
@@ -47,10 +43,7 @@ def main():
         common = intersect(*grouping)
         p_sum += priority(common)
     print(p_sum)
-
-    # aocd.submit(answer, part='a', day=DAY, year=YEAR)
-
-    # aocd.submit(answer, part='b', day=DAY, year=YEAR)
+    aocd.submit(p_sum, part='b', day=DAY, year=YEAR)
 
 
 if __name__ == '__main__':
