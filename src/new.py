@@ -20,11 +20,17 @@ DAY = 1
 
 
 def main():
+    data = """
+"""
     data = aocd.get_data(day=DAY, year=YEAR)
-    inlist = data.split('\n')
+    inlist = [l for l in data.split('\n')]
 
+    # answer = 
+    # print(answer)
     # aocd.submit(answer, part='a', day=DAY, year=YEAR)
 
+    # answer = 
+    # print(answer)
     # aocd.submit(answer, part='b', day=DAY, year=YEAR)
 
 
