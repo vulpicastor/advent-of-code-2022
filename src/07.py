@@ -1,15 +1,7 @@
 #!/usr/bin/env python3
 
-# pylint: disable=unused-import
 import collections
-import functools
-import io
-import itertools
-import operator as op
-import re
-import timeit
 
-import numpy as np
 import aocd
 
 YEAR = 2022
@@ -17,6 +9,7 @@ DAY = 7
 
 
 class MyDir(collections.UserDict):
+    """A naive representation of a filesystem tree"""
 
     def __init__(self, fn, parent=None):
         super().__init__()
@@ -32,15 +25,6 @@ class MyDir(collections.UserDict):
     def add_dir(self, fn):
         if not fn in self.data:
             self.data[fn] = MyDir(fn, self)
-
-    def du(self):
-        size = 0
-        for _, v in self.items():
-            if isinstance(v, MyDir):
-                size += v.du()
-            else:
-                size += v
-        return size
 
     def du_r(self):
         sizes = []
@@ -106,10 +90,9 @@ $ ls
 5626152 d.ext
 7214296 k"""
     data = aocd.get_data(day=DAY, year=YEAR)
-    inlist = [l for l in data.split('\n')]
+    inlist = data.split('\n')
 
     root = parse_tree(inlist)
-    # print(root)
     du_r = root.du_r()
     answer = sum(s for s in du_r if s <= 100000)
     print(answer)
