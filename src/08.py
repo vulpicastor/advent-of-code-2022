@@ -16,38 +16,32 @@ YEAR = 2022
 DAY = 8
 
 
+def _visible(grid):
+    n_row = len(grid)
+    viz = np.zeros_like(grid, dtype=bool)
+    # From top edge.
+    tallest = grid[0].copy()
+    for i in range(1, n_row-1):
+        row = grid[i]
+        viz[i] |= row > tallest
+        np.maximum(tallest, row, out=tallest)
+    tallest[:] = grid[-1]
+    # From bottom edge.
+    for i in reversed(range(1, n_row-1)):
+        row = grid[i]
+        viz[i] |= row > tallest
+        np.maximum(tallest, row, out=tallest)
+    return viz
+
 
 def visible(grid):
-    n_row, n_col = grid.shape
-    from_left = np.zeros_like(grid, dtype=bool)
-    for i, row in enumerate(grid):
-        tallest = -1
-        for j, h in enumerate(row):
-            if h > tallest:
-                from_left[i, j] = True
-                tallest = h
-    from_right = np.zeros_like(grid, dtype=bool)
-    for i, row in enumerate(grid):
-        tallest = -1
-        for j, h in enumerate(reversed(row)):
-            if h > tallest:
-                from_right[i, n_col-j-1] = True
-                tallest = h
-    from_top = np.zeros_like(grid, dtype=bool)
-    for j, col in enumerate(grid.T):
-        tallest = -1
-        for i, h in enumerate(col):
-            if h > tallest:
-                from_top[i, j] = True
-                tallest = h
-    from_bottom = np.zeros_like(grid, dtype=bool)
-    for j, col in enumerate(grid.T):
-        tallest = -1
-        for i, h in enumerate(reversed(col)):
-            if h > tallest:
-                from_bottom[n_row-i-1, j] = True
-                tallest = h
-    return from_left | from_right | from_top | from_bottom
+    # Left and right edges are the top and bottom edges of the transpose.
+    viz = _visible(grid) | (_visible(grid.T)).T
+    # Set all edge trees to visible.
+    viz[[0, -1]] = True
+    viz[:, [0, -1]] = True
+    return viz
+
 
 def viewing(grid):
     n_row, n_col = grid.shape
@@ -79,7 +73,7 @@ def viewing(grid):
                 break
         else:
             scores.append(n_col - j - 1)
-        print(scores)
+        # print(scores)
         grid_score[i, j] = functools.reduce(op.mul, scores)
     return grid_score
 
@@ -102,7 +96,7 @@ def main():
 
     answer = np.max(viewing(grid))
     print(answer)
-    aocd.submit(answer, part='b', day=DAY, year=YEAR)
+    # aocd.submit(answer, part='b', day=DAY, year=YEAR)
 
 
 if __name__ == '__main__':
