@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 
-# pylint: disable=unused-import
-import collections
-import functools
-import io
 import itertools
+import functools
 import operator as op
-import re
-import timeit
 
 import numpy as np
 import aocd
@@ -79,11 +74,11 @@ def main():
 
     answer = np.sum(visible(grid))
     print(answer)
-    # aocd.submit(answer, part='a', day=DAY, year=YEAR)
+    aocd.submit(answer, part='a', day=DAY, year=YEAR)
 
     answer = np.max(viewing(grid))
     print(answer)
-    # aocd.submit(answer, part='b', day=DAY, year=YEAR)
+    aocd.submit(answer, part='b', day=DAY, year=YEAR)
 
 
 if __name__ == '__main__':
