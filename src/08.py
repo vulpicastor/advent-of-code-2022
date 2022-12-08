@@ -47,33 +47,20 @@ def viewing(grid):
     n_row, n_col = grid.shape
     grid_score = np.zeros_like(grid)
     for i, j in itertools.product(range(1, n_row-1), range(1, n_col-1)):
-        shorter = grid < grid[i, j]
+        shorter_row = grid[i] < grid[i, j]
+        shorter_col = grid[:, j] < grid[i, j]
         scores = []
-        for n, vi in enumerate(range(i-1, -1, -1)):
-            if not shorter[vi, j]:
-                scores.append(n + 1)
-                break
-        else:
-            scores.append(i)
-        for n, vi in enumerate(range(i+1, n_row)):
-            if not shorter[vi, j]:
-                scores.append(n + 1)
-                break
-        else:
-            scores.append(n_row - i - 1)
-        for n, vj in enumerate(range(j-1, -1, -1)):
-            if not shorter[i, vj]:
-                scores.append(n + 1)
-                break
-        else:
-            scores.append(j)
-        for n, vj in enumerate(range(j+1, n_col)):
-            if not shorter[i, vj]:
-                scores.append(n + 1)
-                break
-        else:
-            scores.append(n_col - j - 1)
-        # print(scores)
+        # np.argmin conveniently returns the index of the first minimum value.
+        # But if the slice is all True, then it would always return index 0,
+        # in which case the correct value is the length of the slice.
+        to_top = shorter_col[:i][::-1]
+        scores.append(i if np.all(to_top) else (np.argmin(to_top) + 1))
+        to_left = shorter_row[:j][::-1]
+        scores.append(j if np.all(to_left) else (np.argmin(to_left) + 1))
+        to_bottom = shorter_col[i+1:]
+        scores.append(n_row - i - 1 if np.all(to_bottom) else (np.argmin(to_bottom) + 1))
+        to_right = shorter_row[j+1:]
+        scores.append(n_col - j - 1 if np.all(to_right) else (np.argmin(to_right) + 1))
         grid_score[i, j] = functools.reduce(op.mul, scores)
     return grid_score
 
