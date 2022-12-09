@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 
-# pylint: disable=unused-import
 import collections
-import functools
-import io
-import itertools
-import operator as op
-import re
-import timeit
 
 import numpy as np
 import aocd
@@ -23,8 +16,10 @@ MOVEMENT = {
     'R': np.array([ 1,  0]),
 }
 
+
 def new_loc_counter():
     return collections.Counter([(0, 0)])
+
 
 def update_move(head, tail, heading, steps, loc_counter=None):
     for _ in range(steps):
@@ -35,7 +30,6 @@ def update_move(head, tail, heading, steps, loc_counter=None):
         tail += np.clip(delta, -1, 1)
         if loc_counter is not None:
             loc_counter.update([tuple(tail)])
-        # print(tail)
 
 
 def update_rope(rope, heading, steps, loc_counter):
@@ -69,18 +63,15 @@ L 25
 U 20"""
     data = aocd.get_data(day=DAY, year=YEAR)
     inlist = [[h, int(i)] for h, i in (l.split() for l in data.split('\n'))]
-    # print(inlist)
 
     head = np.zeros(2, dtype=np.int64)
     tail = head.copy()
     loc_counter = new_loc_counter()
     for heading, steps in inlist:
         update_move(head, tail, heading, steps, loc_counter)
-        # print(head, tail)
-    # print(len(loc_counter))
     answer = len(loc_counter)
     print(answer)
-    # aocd.submit(answer, part='a', day=DAY, year=YEAR)
+    aocd.submit(answer, part='a', day=DAY, year=YEAR)
 
     rope = np.zeros((10, 2), dtype=np.int64)
     loc_counter = new_loc_counter()
