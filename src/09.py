@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import collections
+import itertools
 
 import numpy as np
 import aocd
@@ -17,31 +17,26 @@ MOVEMENT = {
 }
 
 
-def new_loc_counter():
-    return collections.Counter([(0, 0)])
-
-
-def update_move(head, tail, heading, steps, loc_counter=None):
+def update_move(head, tail, heading, steps, loc_counter):
     for _ in range(steps):
         head += MOVEMENT[heading]
         delta = head - tail
         if np.all(np.abs(delta) <= 1):
             continue
         tail += np.clip(delta, -1, 1)
-        if loc_counter is not None:
-            loc_counter.update([tuple(tail)])
+        loc_counter.add(tuple(tail))
 
 
 def update_rope(rope, heading, steps, loc_counter):
     rope_len = len(rope)
     for _ in range(steps):
         rope[0] += MOVEMENT[heading]
-        for h, t in zip(range(rope_len-1), range(1, rope_len)):
+        for h, t in itertools.pairwise(range(rope_len)):
             delta = rope[h] - rope[t]
             if np.all(np.abs(delta) <= 1):
                 continue
             rope[t] += np.clip(delta, -1, 1)
-        loc_counter.update([tuple(rope[rope_len-1])])
+        loc_counter.add(tuple(rope[rope_len-1]))
 
 
 def main():
@@ -66,7 +61,7 @@ U 20"""
 
     head = np.zeros(2, dtype=np.int64)
     tail = head.copy()
-    loc_counter = new_loc_counter()
+    loc_counter = {(0, 0)}
     for heading, steps in inlist:
         update_move(head, tail, heading, steps, loc_counter)
     answer = len(loc_counter)
@@ -74,7 +69,7 @@ U 20"""
     aocd.submit(answer, part='a', day=DAY, year=YEAR)
 
     rope = np.zeros((10, 2), dtype=np.int64)
-    loc_counter = new_loc_counter()
+    loc_counter = {(0, 0)}
     for heading, steps in inlist:
         update_rope(rope, heading, steps, loc_counter)
     answer = len(loc_counter)
