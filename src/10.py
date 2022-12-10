@@ -32,7 +32,7 @@ def draw(hist):
                 if line:
                     lines.append(''.join(line))
                 return lines
-            if pos in [rax-1, rax, rax+1]:
+            if rax - 1 <= pos <= rax + 1:
                 line.append('#')
             else:
                 line.append('.')
