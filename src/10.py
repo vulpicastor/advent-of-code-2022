@@ -1,36 +1,24 @@
 #!/usr/bin/env python3
 
-# pylint: disable=unused-import
-import collections
-import functools
-import io
-import itertools
-import operator as op
-import re
-import timeit
-
-import numpy as np
 import aocd
 
 YEAR = 2022
 DAY = 10
 
 
-
 def emulate(prog):
-    # cycle = 1
     rax = 1
     hist = [1]
     for ins in prog:
         match ins.split():
             case ['noop']:
                 hist.append(rax)
-                # cycle += 1
             case ['addx', n]:
                 hist.append(rax)
                 rax += int(n)
                 hist.append(rax)
     return hist
+
 
 def draw(hist):
     lines = []
@@ -49,8 +37,6 @@ def draw(hist):
             else:
                 line.append('.')
         lines.append(''.join(line))
-            
-
 
 
 def main():
@@ -207,15 +193,12 @@ noop"""
     inlist = [l for l in data.split('\n')]
 
     hist = emulate(inlist)
-    print([hist[i] for i in range(19, 221, 40)])
     answer = sum(i * hist[i-1] for i in range(20, 221, 40))
     print(answer)
-    # aocd.submit(answer, part='a', day=DAY, year=YEAR)
+    aocd.submit(answer, part='a', day=DAY, year=YEAR)
 
-    print(len(hist))
-    [print(l) for l in draw(hist)]
-    # answer = 
-    # print(answer)
+    for l in draw(hist):
+        print(l)
     # aocd.submit(answer, part='b', day=DAY, year=YEAR)
 
 
