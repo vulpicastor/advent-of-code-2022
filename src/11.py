@@ -20,11 +20,14 @@ class Monkey:
     """🙈🙉🙊"""
 
     def __init__(self, rules):
+        # This was definitely over-engineering, should've just edited the
+        # input instead.
         self.items = collections.deque(
             int(n.strip()) for n in (rules[1].split(':'))[1].split(', '))
         op_tokens = rules[2].split()
         operator = {'*': op.mul, '+': op.add}[op_tokens[4]]
         if op_tokens[5] == 'old':
+            # Was this special case really necessary???
             self.operate = lambda x: operator(x, x)
         else:
             operand = int(op_tokens[5])
@@ -49,6 +52,9 @@ class Monkey:
         else:
             inspects %= global_div
         self.items.clear()
+        # The example given in the problem is carefully constructed so that no
+        # two items ever end up with the same worry level. Hardcoding the
+        # number of monkeys to be 8 here because I'm lazy.
         dispatcher = [[] for _ in range(8)]
         for w, m in zip(inspects, np.mod(inspects, self.dividend)==0):
             dispatcher[self.if_true if m else self.if_false].append(w)
