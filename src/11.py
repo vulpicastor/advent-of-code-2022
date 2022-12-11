@@ -17,6 +17,7 @@ DAY = 11
 
 
 class Monkey:
+    """🙈🙉🙊"""
 
     def __init__(self, rules):
         self.items = collections.deque(
@@ -53,19 +54,13 @@ class Monkey:
             dispatcher[self.if_true if m else self.if_false].append(w)
         return dispatcher
 
-def do_round(monkeys):
+
+def do_round(monkeys, global_div=None):
     for m in monkeys:
-        to_dispatch = m.dispatch()
-        # print(to_dispatch)
+        to_dispatch = m.dispatch(global_div)
         for new_m, worries in zip(monkeys, to_dispatch):
             new_m.extend(worries)
 
-def do_round2(monkeys, global_div):
-    for m in monkeys:
-        to_dispatch = m.dispatch(global_div)
-        # print(to_dispatch)
-        for new_m, worries in zip(monkeys, to_dispatch):
-            new_m.extend(worries)
 
 def main():
     data = """Monkey 0:
@@ -99,30 +94,23 @@ Monkey 3:
     inlist = [l.split('\n') for l in data.split('\n\n')]
 
     monkeys = list(map(Monkey, inlist))
-    old_num_items = sum(len(m.items) for m in monkeys)
-    # print([[m.items, m.dividend, m.if_true, m.if_false] for m in monkeys])
     for _ in range(20):
         do_round(monkeys)
-        # print([m.items for m in monkeys])
     handling = [m.handled for m in monkeys]
     handling.sort()
-    # print([m.dispatch() for m in monkeys])
     answer = handling[-1] * handling[-2]
-    new_num_items = sum(len(m.items) for m in monkeys)
-    print(old_num_items, new_num_items)
     print(answer)
     # aocd.submit(answer, part='a', day=DAY, year=YEAR)
 
     monkeys = list(map(Monkey, inlist))
     global_div = functools.reduce(op.mul, (m.dividend for m in monkeys))
     for _ in range(10000):
-        do_round2(monkeys, global_div)
-        # print([m.items for m in monkeys])
+        do_round(monkeys, global_div)
     handling = [m.handled for m in monkeys]
     handling.sort()
     answer = handling[-1] * handling[-2]
     print(answer)
-    aocd.submit(answer, part='b', day=DAY, year=YEAR)
+    # aocd.submit(answer, part='b', day=DAY, year=YEAR)
 
 
 if __name__ == '__main__':
