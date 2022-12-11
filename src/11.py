@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 
-# pylint: disable=unused-import
 import collections
 import functools
-import io
-import itertools
 import operator as op
-import re
-import timeit
 
 import numpy as np
 import aocd
@@ -16,14 +11,15 @@ YEAR = 2022
 DAY = 11
 
 
-class Monkey:
+class Monkey(collections.UserList):
     """🙈🙉🙊"""
 
     def __init__(self, rules):
         # This was definitely over-engineering, should've just edited the
         # input instead.
-        self.items = collections.deque(
-            int(n.strip()) for n in (rules[1].split(':'))[1].split(', '))
+        super().__init__()
+        self.data = [
+            int(n.strip()) for n in (rules[1].split(':'))[1].split(', ')]
         op_tokens = rules[2].split()
         operator = {'*': op.mul, '+': op.add}[op_tokens[4]]
         if op_tokens[5] == 'old':
@@ -37,21 +33,15 @@ class Monkey:
         self.if_false = int(rules[5][-1])
         self.handled = 0
 
-    def append(self, x):
-        self.items.append(x)
-
-    def extend(self, x):
-        self.items.extend(x)
-
     def dispatch(self, global_div=None):
-        self.handled += len(self.items)
-        inspects = np.array(self.items)
+        self.handled += len(self.data)
+        inspects = np.array(self.data)
         inspects = self.operate(inspects)
         if global_div is None:
             inspects //= 3
         else:
             inspects %= global_div
-        self.items.clear()
+        self.data = []
         # The example given in the problem is carefully constructed so that no
         # two items ever end up with the same worry level. Hardcoding the
         # number of monkeys to be 8 here because I'm lazy.
