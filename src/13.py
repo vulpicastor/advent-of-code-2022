@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 
-# pylint: disable=unused-import
-import collections
 import functools
-import io
 import itertools
-import operator as op
-import re
-import timeit
 
 import numpy as np
 import aocd
@@ -15,11 +9,13 @@ import aocd
 YEAR = 2022
 DAY = 13
 
+
 def cmp(a, b):
+    # Credit: Stack Overflow
     return (a > b) - (a < b)
 
+
 def my_cmp(a, b):
-    # print(a, b)
     if isinstance(a, int) and isinstance(b, int):
         return cmp(a, b)
     if isinstance(a, int):
@@ -58,33 +54,25 @@ def main():
 [1,[2,[3,[4,[5,6,7]]]],8,9]
 [1,[2,[3,[4,[5,6,0]]]],8,9]"""
     data = aocd.get_data(day=DAY, year=YEAR)
-    inlist = [l.split() for l in data.split('\n\n')]
-    # print(inlist)
-    pairs = []
+    inlist = data.split()
     packets = []
-    for pair in inlist:
-        new_p = []
-        for packet in pair:
-            print(f'a={packet}')
-            loc = {}
-            exec(f'a={packet}', {}, loc)
-            new_p.append(loc['a'])
-            packets.append(loc['a'])
-        pairs.append(new_p)
-    # print(pairs)
+    for p in inlist:
+        loc = {}
+        # Why write my own parser when Python already has one? :P
+        exec(f'a={p}', {}, loc)  # pylint: disable='exec-used'
+        packets.append(loc['a'])
 
-    result = list(itertools.starmap(my_cmp, pairs))
-    # print(result)
+    # Horrible iterator hack to take two items at a time.
+    result = list(itertools.starmap(my_cmp, zip(*[iter(packets)]*2)))
     answer = np.sum(np.argwhere(np.array(result) < 0) + 1)
-    # print(answer)
-    # aocd.submit(answer, part='a', day=DAY, year=YEAR)
+    print(answer)
+    aocd.submit(answer, part='a', day=DAY, year=YEAR)
 
+    # [How many [layers [of [nested [lists]]]] would [you] [like]]?
+    # Yes.
     packets.extend([[[2]], [[6]]])
     packets.sort(key=functools.cmp_to_key(my_cmp))
-    for p in packets:
-        print(p)
     answer = (packets.index([[2]]) + 1) * (packets.index([[6]]) + 1)
-    # answer = 
     print(answer)
     aocd.submit(answer, part='b', day=DAY, year=YEAR)
 
