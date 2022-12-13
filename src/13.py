@@ -16,12 +16,13 @@ def cmp(a, b):
 
 
 def my_cmp(a, b):
-    if isinstance(a, int) and isinstance(b, int):
-        return cmp(a, b)
-    if isinstance(a, int):
-        a = [a]
-    elif isinstance(b, int):
-        b = [b]
+    match a, b:
+        case int(x), int(y):
+            return cmp(x, y)
+        case int(x), list(b):
+            a = [x]
+        case list(a), int(y):
+            b = [y]
     for x, y in zip(a, b):
         if (cmp_res := my_cmp(x, y)) == 0:
             continue
