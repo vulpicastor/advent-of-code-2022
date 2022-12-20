@@ -32,7 +32,9 @@ class ListNode:
 
     def move(self, x, length=None):
         if length is not None:
+            x += (length - 1) // 2
             x %= length - 1
+            x -= (length - 1) // 2
         if x == 0:
             return
         p = self.p
