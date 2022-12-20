@@ -30,11 +30,7 @@ class ListNode:
             yield node
             node = node.n
 
-    def move(self, x, length=None):
-        if length is not None:
-            x += (length - 1) // 2
-            x %= length - 1
-            x -= (length - 1) // 2
+    def move(self, x):
         if x == 0:
             return
         p = self.p
@@ -42,11 +38,11 @@ class ListNode:
         p.n, n.p = n, p
         if x > 0:
             insert_after = self
-            for i in range(x):
+            for _ in range(x):
                 insert_after = insert_after.n
         else:
             insert_after = self.p
-            for i in range(-x):
+            for _ in range(-x):
                 insert_after = insert_after.p
         insert_before = insert_after.n
         insert_after.n, self.p = self, insert_after
@@ -91,9 +87,14 @@ class RingBuffer:
                 return i
 
     def mix(self):
-        length = len(self.orig)
+        modulus = len(self.orig) - 1
+        offset = modulus // 2
         for i in self.orig:
-            i.move(i.v, length)
+            m = i.v + offset
+            m %= modulus
+            m -= offset
+            i.move(m)
+
 
 
 def main():
@@ -115,28 +116,28 @@ def main():
         return
     from_zero = iter(zero_node)
     answer = 0
-    for j in range(3):
-        for _, i in zip(range(1000), from_zero):
-            pass
-        # print(i.v)
-        answer += i.v
-    # answer = 
-    # print(answer)
-    # aocd.submit(answer, part='a', day=DAY, year=YEAR)
-
-    buffer = RingBuffer(l * 811589153 for l in inlist)
-    for _ in range(10):
-        buffer.mix()
-    if (zero_node := buffer.find(0)) is None:
-        return
-    from_zero = iter(zero_node)
-    answer = 0
-    for j in range(3):
+    for _ in range(3):
         for _, i in zip(range(1000), from_zero):
             pass
         print(i.v)
         answer += i.v
-    # answer = 
+    print(answer)
+    aocd.submit(answer, part='a', day=DAY, year=YEAR)
+
+    buffer = RingBuffer(l * 811589153 for l in inlist)
+    # print(list(buffer))
+    for _ in range(10):
+        buffer.mix()
+    # print(list(buffer))
+    if (zero_node := buffer.find(0)) is None:
+        return
+    from_zero = iter(zero_node)
+    answer = 0
+    for _ in range(3):
+        for _, i in zip(range(1000), from_zero):
+            pass
+        print(i.v)
+        answer += i.v
     print(answer)
     aocd.submit(answer, part='b', day=DAY, year=YEAR)
 
