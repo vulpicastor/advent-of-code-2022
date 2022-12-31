@@ -3,6 +3,7 @@
 # pylint: disable=unused-import
 import collections
 import functools
+import heapq
 import io
 import itertools
 import operator as op
@@ -155,6 +156,47 @@ class BlizzardValley:
                 break
         return dists, parents
 
+    def astar(self):
+        h, w = self.shape
+        def heuristic(node):
+            _, i, j = node
+            return abs(h - i) + abs(w - 1 - j)
+        start = (0, -1, 0)
+        dists = dict()
+        dists[start] = 0
+        parents = dict()
+        parents[start] = None
+        queue = []
+        heapq.heappush(queue, (0, start))
+
+        found = False
+        while queue:
+            _, visit_node = heapq.heappop(queue)
+            print(_, visit_node)
+            t, i, j = visit_node
+            for di, dj in [(0, 0), (0, 1), (1, 0), (0, -1), (-1, 0)]:
+                new_i = i + di
+                new_j = j + dj
+                # If it's actually the desired end point
+                if new_i == self.shape[0] and new_j == self.shape[1] - 1:
+                    dists['end'] = dists[visit_node] + 1
+                    parents['end'] = visit_node
+                    found = True
+                    break
+                neigh = (t + 1, new_i, new_j)
+                if neigh in dists:
+                    continue
+                # If it is actually an allowed position
+                if ((i == -1 and j == 0 and new_i == -1 and j == 0)
+                    or (self.in_bound(new_i, new_j)
+                        and self.history[(t + 1) % self.cycle, new_i, new_j] == 0)):
+                    dists[neigh] = dists[visit_node] + 1
+                    parents[neigh] = visit_node
+                    heapq.heappush(queue, (dists[neigh] + heuristic(neigh), neigh))
+            if found:
+                break
+        return dists, parents
+
     def in_bound(self, i, j):
         h, w = self.shape
         if 0 <= i < h and 0 <= j < w:
@@ -184,7 +226,7 @@ def main():
     sim.run_sim()
     # print(sim.history)
 
-    dists, parents = sim.janky_bfs()
+    dists, parents = sim.astar()
     # print(dists, parents)
     print(dists)
     print(parents)
