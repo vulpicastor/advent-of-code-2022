@@ -122,8 +122,10 @@ class BlizzardValley:
                     return False
         return True
 
-    def janky_bfs(self):
-        start = (0, -1, 0)
+    def janky_bfs(self, start=(0, -1, 0), dest=None):
+        maze_goal = (self.shape[0], self.shape[1] - 1)
+        if dest is None:
+            dest = maze_goal
         dists = dict()
         dists[start] = 0
         parents = dict()
@@ -132,6 +134,7 @@ class BlizzardValley:
         queue.append(start)
 
         found = False
+        neigh = None
         while queue:
             visit_node = queue.popleft()
             t, i, j = visit_node
@@ -139,22 +142,25 @@ class BlizzardValley:
                 new_i = i + di
                 new_j = j + dj
                 neigh = (t + 1, new_i, new_j)
+                if neigh in dists:
+                    continue
+                # Except if it's actually the desired end point
+                if new_i == dest[0] and new_j == dest[1]:
+                    dists[neigh] = dists[visit_node] + 1
+                    parents[neigh] = visit_node
+                    found = True
+                    break
                 # If it is actually an allowed position
-                if ((i == -1 and j == 0 and new_i == -1 and j == 0)
+                if ((i == -1 and j == 0 and new_i == -1 and new_j == 0)
+                    or (i == maze_goal[0] and j == maze_goal[1] and new_i == maze_goal[0] and new_j == maze_goal[1])
                     or (self.in_bound(new_i, new_j)
                         and self.history[(t + 1) % self.cycle, new_i, new_j] == 0)):
                     dists[neigh] = dists[visit_node] + 1
                     parents[neigh] = visit_node
                     queue.append(neigh)
-                # Except if it's actually the desired end point
-                if new_i == self.shape[0] and new_j == self.shape[1] - 1:
-                    dists['end'] = dists[visit_node] + 1
-                    parents['end'] = visit_node
-                    found = True
-                    break
             if found:
                 break
-        return dists, parents
+        return neigh, dists, parents
 
     def astar(self):
         h, w = self.shape
@@ -177,17 +183,17 @@ class BlizzardValley:
             for di, dj in [(0, 0), (0, 1), (1, 0), (0, -1), (-1, 0)]:
                 new_i = i + di
                 new_j = j + dj
+                neigh = (t + 1, new_i, new_j)
+                if neigh in dists:
+                    continue
                 # If it's actually the desired end point
                 if new_i == self.shape[0] and new_j == self.shape[1] - 1:
                     dists['end'] = dists[visit_node] + 1
                     parents['end'] = visit_node
                     found = True
                     break
-                neigh = (t + 1, new_i, new_j)
-                if neigh in dists:
-                    continue
                 # If it is actually an allowed position
-                if ((i == -1 and j == 0 and new_i == -1 and j == 0)
+                if ((i == -1 and j == 0 and new_i == -1 and new_j == 0)
                     or (self.in_bound(new_i, new_j)
                         and self.history[(t + 1) % self.cycle, new_i, new_j] == 0)):
                     dists[neigh] = dists[visit_node] + 1
@@ -204,8 +210,13 @@ class BlizzardValley:
         return False
 
 
-def make_grid(inlist, grid):
-    pass
+def trace_path(dest, parents):
+    trace = [dest]
+    back = dest
+    while parents[back] is not None:
+        back = parents[back]
+        trace.append(back)
+    return list(reversed(trace))
 
 
 def main():
@@ -226,25 +237,24 @@ def main():
     sim.run_sim()
     # print(sim.history)
 
-    dists, parents = sim.astar()
-    # print(dists, parents)
-    print(dists)
-    print(parents)
-    path = ['end']
-    backtrack = 'end'
-    while parents[backtrack] is not None:
-        backtrack = parents[backtrack]
-        path.append(backtrack)
-    print(list(reversed(path)))
-    print(dists['end'])
-
-    # answer = 
-    # print(answer)
+    end, dists, parents = sim.janky_bfs()
+    # print(dists)
+    # print(parents)
+    # print(trace_path(end, parents))
+    answer = dists[end]
+    print(answer, end)
     # aocd.submit(answer, part='a', day=DAY, year=YEAR)
 
-    # answer = 
-    # print(answer)
-    # aocd.submit(answer, part='b', day=DAY, year=YEAR)
+    end2, dists, parents = sim.janky_bfs(start=end, dest=(-1, 0))
+    # print(trace_path(end2, parents))
+    print(dists[end2], end2)
+    answer += dists[end2]
+    end3, dists, parents = sim.janky_bfs(start=end2)
+    # print(trace_path(end3, parents))
+    print(dists[end3], end3)
+    answer += dists[end3]
+    print(answer)
+    aocd.submit(answer, part='b', day=DAY, year=YEAR)
 
 
 if __name__ == '__main__':
