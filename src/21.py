@@ -24,13 +24,23 @@ MAP_OP = {
     '*': op.mul,
     '/': op.floordiv,
 }
+OP_STR = {v: k for k, v in MAP_OP.items()}
 
 @dataclasses.dataclass(unsafe_hash=True)
 class Expr:
-    # name: Optional[str] = None
+    name: Optional[str] = None
     func: Optional[Callable] = None
     children: Optional[tuple["Expr", "Expr"]] = None
     value: Optional[int | float] = None
+
+    def __str__(self):
+        if self.name == 'humn':
+            return 'humn'
+        if self.value is not None:
+            return str(self.value)
+        if self.func is not None and self.children is not None:
+            return f'({self.children[0]} {OP_STR[self.func]} {self.children[1]})'
+        return f'Expr({self.name}, {self.func}, {self.children}, {self.value})'
 
     @functools.cache
     def eval(self):
@@ -48,6 +58,7 @@ def make_symbol_table():
 def parse_line(line: str, symbol_table: collections.defaultdict[str, Expr]) -> None:
     lhs, rhs = line.split(': ')
     node = symbol_table[lhs]
+    node.name = lhs
     if rhs.isnumeric():
         node.value = int(rhs)
         return
@@ -85,7 +96,9 @@ hmdt: 32"""
     symbols = make_symbol_table()
     for l in inlist:
         parse_line(l, symbols)
-    # answer = 
+    print(symbols['root'].children[0])
+    print()
+    print(symbols['root'].children[1])
     # print(answer)
     # aocd.submit(answer, part='b', day=DAY, year=YEAR)
 
