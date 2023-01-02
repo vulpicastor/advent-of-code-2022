@@ -64,7 +64,7 @@ def tetris_move(rock, height, moves, grid):
         if np.any(rock & grid[rock_i-1:rock_i-1+rock_h, rock_j:rock_j+rock_w]):
             break
         rock_i -= 1
-    grid[rock_i:rock_i+rock_h, rock_j:rock_j+rock_w] = rock
+    grid[rock_i:rock_i+rock_h, rock_j:rock_j+rock_w] |= rock
     new_height = max(height, rock_i + rock_h)
     return  new_height, grid
 
