@@ -44,7 +44,7 @@ def tetris_move(rock, height, moves, grid, h_offset=0):
         new_grid[:grid_h] = grid
         grid = new_grid
         grid_h *= 2
-    for m_i, m in moves:
+    for move_n, m in moves:
         # print(m_i, m)
         match m:
             case '>':
@@ -66,7 +66,7 @@ def tetris_move(rock, height, moves, grid, h_offset=0):
         rock_i -= 1
     grid[rock_i:rock_i+rock_h, rock_j:rock_j+rock_w] |= rock
     new_height = max(height, h_offset + rock_i + rock_h)
-    return  new_height, grid
+    return  new_height, grid, move_n
 
 
 def trim_grid(grid, height, h_offset, trim_threshold=256, min_height=64):
@@ -89,8 +89,30 @@ def tetris_play(moves, max_num_rock, grid=None):
     for i, (rock_n, rock) in zip(range(max_num_rock), itertools.cycle(enumerate(ROCKS))):
         # print(i, rock_n, height)
         # print_grid(grid, height)
-        height, grid = tetris_move(rock, height, iter_moves, grid)
+        height, grid, _ = tetris_move(rock, height, iter_moves, grid)
         heights.append(height)
+    # print(i + 1, rock_n, height)
+    # print_grid(grid, height)
+    return grid, height, heights
+
+
+def tetris_play_cycle(moves, max_num_rock, grid=None, memo=None, memo_height=1024):
+    if grid is None:
+        grid = np.zeros((8, 7), dtype=bool)
+    if memo is None:
+        memo = dict()
+    height = 0
+    last_height = height
+    heights = [height]
+    iter_moves = itertools.cycle(enumerate(moves))
+    for i, (rock_n, rock) in zip(range(max_num_rock), itertools.cycle(enumerate(ROCKS))):
+        # print(i, rock_n, height)
+        # print_grid(grid, height)
+        height, grid, move_n = tetris_move(rock, height, iter_moves, grid)
+        heights.append(height - last_height)
+        last_height = height
+        if height >= memo_height:
+            memo[(move_n)]
     # print(i + 1, rock_n, height)
     # print_grid(grid, height)
     return grid, height, heights
